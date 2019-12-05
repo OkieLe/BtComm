@@ -6,16 +6,10 @@ import android.util.Log
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattDescriptor
 import android.bluetooth.BluetoothGattCharacteristic
-import android.bluetooth.le.AdvertiseCallback
-import android.bluetooth.le.AdvertiseData
-import android.bluetooth.le.AdvertiseSettings
-import android.bluetooth.le.BluetoothLeAdvertiser
 import android.content.BroadcastReceiver
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.ParcelUuid
 import com.boopia.btcomm.utils.BTConstants.createChatService
 import com.boopia.btcomm.utils.BTConstants.wrapMessage
 import com.boopia.btcomm.utils.BTConstants.wrapOnlineState
@@ -24,10 +18,7 @@ import com.boopia.btcomm.model.MessageType
 import com.boopia.btcomm.utils.BTConstants
 import java.util.*
 
-class GattServerManager(private val context: Context) {
-
-    interface GattCallback {
-    }
+class GattServerManager(context: Context): BaseManager(context) {
 
     /* Bluetooth API */
     private var bluetoothManager: BluetoothManager =
@@ -59,35 +50,9 @@ class GattServerManager(private val context: Context) {
         }
     }
 
-    /**
-     * Listens for Bluetooth adapter events to enable/disable
-     * advertising and server functionality.
-     */
-    private val bluetoothReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            when (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.STATE_OFF)) {
-                BluetoothAdapter.STATE_ON -> {
-                    startAdvertising()
-                    startServer()
-                }
-                BluetoothAdapter.STATE_OFF -> {
-                    stopServer()
-                    stopAdvertising()
-                }
-            }
-        }
-    }
-
-    /**
-     * Callback to receive information about the advertisement process.
-     */
-    private val advertiseCallback = object : AdvertiseCallback() {
-        override fun onStartSuccess(settingsInEffect: AdvertiseSettings) {
-            Log.i(TAG, "LE Advertise Started.")
-        }
-
-        override fun onStartFailure(errorCode: Int) {
-            Log.w(TAG, "LE Advertise Failed: $errorCode")
+    override fun onBluetoothEnabled(enable: Boolean) {
+        if (!enable) {
+            stopServer()
         }
     }
 
@@ -195,102 +160,28 @@ class GattServerManager(private val context: Context) {
         }
     }
 
-    init {
-        val bluetoothAdapter = bluetoothManager.adapter
-        // We can't continue without proper Bluetooth support
-        check(checkBluetoothSupport(bluetoothAdapter))
-
-        // Register for system Bluetooth events
-        val filter = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
-        context.registerReceiver(bluetoothReceiver, filter)
-        if (!bluetoothAdapter.isEnabled) {
-            Log.d(TAG, "Bluetooth is currently disabled...enabling")
-            bluetoothAdapter.enable()
-        } else {
-            Log.d(TAG, "Bluetooth enabled...starting services")
-            startAdvertising()
-            startServer()
-        }
-    }
-
-    fun start() {
+    override fun start() {
+        super.start()
         // Register for system clock events
-        val filter = IntentFilter().apply {
+        val chatFilter = IntentFilter().apply {
             addAction(BTConstants.ACTION_ONLINE_STATE)
             addAction(BTConstants.ACTION_SEND_MESSAGE)
             addAction(BTConstants.ACTION_MESSAGE_RECEIVED)
         }
+        context.registerReceiver(chatReceiver, chatFilter)
 
-        context.registerReceiver(chatReceiver, filter)
+        if (bluetoothAdapter.isEnabled) {
+            startServer()
+        }
     }
 
-    fun stop() {
-        context.unregisterReceiver(chatReceiver)
-    }
-
-    fun destroy() {
-        val bluetoothAdapter = bluetoothManager.adapter
+    override fun stop() {
         if (bluetoothAdapter.isEnabled) {
             stopServer()
-            stopAdvertising()
         }
 
-        context.unregisterReceiver(bluetoothReceiver)
-    }
-
-    /**
-     * Verify the level of Bluetooth support provided by the hardware.
-     * @param bluetoothAdapter System [BluetoothAdapter].
-     * @return true if Bluetooth is properly supported, false otherwise.
-     */
-    private fun checkBluetoothSupport(bluetoothAdapter: BluetoothAdapter?): Boolean {
-        if (bluetoothAdapter == null) {
-            Log.w(TAG, "Bluetooth is not supported")
-            return false
-        }
-
-        if (!context.packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            Log.w(TAG, "Bluetooth LE is not supported")
-            return false
-        }
-
-        return true
-    }
-
-    /**
-     * Begin advertising over Bluetooth that this device is connectable
-     * and supports the Chat Service.
-     */
-    private fun startAdvertising() {
-        val bluetoothLeAdvertiser: BluetoothLeAdvertiser? =
-            bluetoothManager.adapter.bluetoothLeAdvertiser
-
-        bluetoothLeAdvertiser?.let {
-            val settings = AdvertiseSettings.Builder()
-                .setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_BALANCED)
-                .setConnectable(true)
-                .setTimeout(0)
-                .setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_MEDIUM)
-                .build()
-
-            val data = AdvertiseData.Builder()
-                .setIncludeDeviceName(true)
-                .setIncludeTxPowerLevel(false)
-                .addServiceUuid(ParcelUuid(BTConstants.SERVICE_CHAT))
-                .build()
-
-            it.startAdvertising(settings, data, advertiseCallback)
-        } ?: Log.w(TAG, "Failed to create advertiser")
-    }
-
-    /**
-     * Stop Bluetooth advertisements.
-     */
-    private fun stopAdvertising() {
-        val bluetoothLeAdvertiser: BluetoothLeAdvertiser? =
-            bluetoothManager.adapter.bluetoothLeAdvertiser
-        bluetoothLeAdvertiser?.stopAdvertising(advertiseCallback)
-            ?: Log.w(TAG, "Failed to create advertiser")
+        context.unregisterReceiver(chatReceiver)
+        super.stop()
     }
 
     /**
@@ -302,9 +193,6 @@ class GattServerManager(private val context: Context) {
 
         bluetoothGattServer?.addService(createChatService())
             ?: Log.w(TAG, "Unable to create GATT server")
-
-        // Initialize the local UI
-        updateLocalUi()
     }
 
     /**
