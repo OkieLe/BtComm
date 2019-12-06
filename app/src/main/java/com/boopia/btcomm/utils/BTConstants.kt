@@ -4,12 +4,11 @@ import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattDescriptor
 import android.bluetooth.BluetoothGattService
 import java.util.*
-import kotlin.experimental.and
 
 object BTConstants {
 
-    val SERVICE_CHAT: UUID = UUID.fromString("703ecd36-825e-4d0f-b200-ae901ff8decb")
-    val CHARACTERISTIC_GESTURE: UUID = UUID.fromString("a8089ebe-8d56-4b04-8896-b925c3bf7c18")
+    val SERVICE_CHAT: UUID = UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb")
+    val CHARACTERISTIC_GESTURE: UUID = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb")
     val CONTENT_NOTIFY: UUID = UUID.fromString("385aa50f-81a4-4fc2-a663-d5cc22d72c84")
 
     const val ACTION_GATT_CONNECTED = "com.thoughtworks.hmi.ACTION_GATT_CONNECTED"
