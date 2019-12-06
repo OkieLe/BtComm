@@ -13,11 +13,13 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.boopia.btcomm.R
+import com.boopia.btcomm.bt.DataDealer
 import com.boopia.btcomm.bt.GattClientManager
 import com.boopia.btcomm.utils.BTConstants
+import com.boopia.btcomm.utils.Gesture
 import io.github.boopited.droidbt.MasterManager
 
-class MainFragment : Fragment(), MasterManager.DeviceCallback {
+class MainFragment : Fragment(), MasterManager.DeviceCallback, DataDealer<Gesture> {
 
     companion object {
         private const val TAG = "MainFragment"
@@ -76,12 +78,16 @@ class MainFragment : Fragment(), MasterManager.DeviceCallback {
     }
 
     override fun onComplete() {
-        gattClient = GattClientManager(requireContext(), targetDevices.toList())
+        gattClient = GattClientManager(requireContext(), targetDevices.toList(), this)
         gattClient?.start()
     }
 
     override fun onFailed(error: Int) {
         Toast.makeText(requireActivity(), "Error: $error", Toast.LENGTH_LONG).show()
+    }
+
+    override fun onData(data: Gesture) {
+        Toast.makeText(requireContext(), "${data.type}", Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroyView() {

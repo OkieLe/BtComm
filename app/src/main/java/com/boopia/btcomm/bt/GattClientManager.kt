@@ -6,12 +6,18 @@ import android.content.Intent
 import android.util.Log
 import com.boopia.btcomm.utils.BTConstants
 import com.boopia.btcomm.utils.BTConstants.unwrapMessage
+import com.boopia.btcomm.utils.Gesture
 import io.github.boopited.droidbt.common.BaseManager
 import io.github.boopited.droidbt.gatt.GattClient
 
+interface DataDealer<T> {
+    fun onData(data: T)
+}
+
 class GattClientManager(
     context: Context,
-    private val devicesAddress: List<String>
+    private val devicesAddress: List<String>,
+    private val dataDealer: DataDealer<Gesture>
 ): BaseManager(context), GattClient.GattClientCallback {
 
     private var bluetoothGattClients: MutableSet<GattClient> = mutableSetOf()
@@ -39,7 +45,9 @@ class GattClientManager(
 
     override fun onDataAvailable(gatt: BluetoothGatt, characteristic: BluetoothGattCharacteristic) {
         broadcastUpdate(BTConstants.ACTION_DATA_AVAILABLE, characteristic)
-        Log.i(TAG, unwrapMessage(characteristic.value).toString())
+        val data = unwrapMessage(characteristic.value)
+        Log.i(TAG, data.toString())
+        dataDealer.onData(data)
     }
 
     private fun broadcastUpdate(action: String) {
