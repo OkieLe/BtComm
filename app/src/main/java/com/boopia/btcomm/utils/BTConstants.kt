@@ -9,7 +9,7 @@ object BTConstants {
 
     val SERVICE_CHAT: UUID = UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb")
     val CHARACTERISTIC_GESTURE: UUID = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb")
-    val CONTENT_NOTIFY: UUID = UUID.fromString("385aa50f-81a4-4fc2-a663-d5cc22d72c84")
+    val CONTENT_NOTIFY: UUID = UUID.fromString("00002902-0000-1000-8000-00805F9B34FB")
 
     const val ACTION_GATT_CONNECTED = "com.thoughtworks.hmi.ACTION_GATT_CONNECTED"
     const val ACTION_GATT_DISCONNECTED = "com.thoughtworks.hmi.ACTION_GATT_DISCONNECTED"
@@ -57,7 +57,9 @@ object BTConstants {
     @ExperimentalUnsignedTypes
     fun unwrapMessage(value: ByteArray): Gesture {
         val type = value[0].toInt()
-        val time = uint32ByteArrayToLong(value.copyOfRange(1, 5))
+        val time = if (value.size > 5) {
+            uint32ByteArrayToLong(value.copyOfRange(1, 5))
+        } else System.currentTimeMillis() / 1000
         return Gesture(type, time)
     }
 
