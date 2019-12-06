@@ -41,7 +41,8 @@ class MainFragment : Fragment(), MasterManager.DeviceCallback {
         val view = inflater.inflate(R.layout.main_fragment, container, false)
         initViews(view)
         masterManager =
-            MasterManager(requireContext(), this, BTConstants.SERVICE_CHAT)
+            MasterManager(requireContext(), this,
+                BTConstants.SERVICE_GESTURE, BTConstants.BT_NAME_PREFIX)
         return view
     }
 

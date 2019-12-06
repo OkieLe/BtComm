@@ -32,7 +32,7 @@ class GattClientManager(
         broadcastUpdate(BTConstants.ACTION_GATT_SERVICES_DISCOVERED)
         bluetoothGattClients.find { it.sameAs(gatt) }
             ?.setCharacteristicNotification(
-                gatt.getService(BTConstants.SERVICE_CHAT)
+                gatt.getService(BTConstants.SERVICE_GESTURE)
                     .getCharacteristic(BTConstants.CHARACTERISTIC_GESTURE),
                 BTConstants.CONTENT_NOTIFY, true)
     }

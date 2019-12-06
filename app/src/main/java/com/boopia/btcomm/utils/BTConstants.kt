@@ -7,7 +7,8 @@ import java.util.*
 
 object BTConstants {
 
-    val SERVICE_CHAT: UUID = UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb")
+    const val BT_NAME_PREFIX = "HMI_NAVI_"
+    val SERVICE_GESTURE: UUID = UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb")
     val CHARACTERISTIC_GESTURE: UUID = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb")
     val CONTENT_NOTIFY: UUID = UUID.fromString("00002902-0000-1000-8000-00805F9B34FB")
 
@@ -23,7 +24,7 @@ object BTConstants {
 
     fun createChatService(): BluetoothGattService {
         val service = BluetoothGattService(
-            SERVICE_CHAT,
+            SERVICE_GESTURE,
             BluetoothGattService.SERVICE_TYPE_PRIMARY)
 
         val message = BluetoothGattCharacteristic(

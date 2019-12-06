@@ -63,7 +63,7 @@ class GattServerManager(context: Context): BaseManager(context), GattServer.Gatt
 
     override fun stop() {
         if (bluetoothAdapter.isEnabled) {
-            bluetoothGattServer.stopService(BTConstants.SERVICE_CHAT)
+            bluetoothGattServer.stopService(BTConstants.SERVICE_GESTURE)
         }
         bluetoothGattServer.shutdown()
         super.stop()
@@ -76,7 +76,7 @@ class GattServerManager(context: Context): BaseManager(context), GattServer.Gatt
     fun notifyGesture(uuid: UUID, extra: Bundle?) {
         Log.i(TAG, "Sending update to subscribers")
         bluetoothGattServer.notifyDevices(
-            BTConstants.SERVICE_CHAT, uuid,
+            BTConstants.SERVICE_GESTURE, uuid,
             wrapNotificationData(uuid, extra))
     }
 
