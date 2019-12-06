@@ -1,0 +1,3 @@
+[submodule "droidbt"]
+	path = droidbt
+	url = git@github.com:boopited/droidbt.git

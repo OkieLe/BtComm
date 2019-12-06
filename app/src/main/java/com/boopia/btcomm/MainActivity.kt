@@ -7,8 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import com.boopia.btcomm.ui.main.MainFragment
-import com.boopia.btcomm.utils.BluetoothUtils
-import com.boopia.btcomm.utils.BluetoothUtils.REQUEST_ENABLE_BT
+import io.github.boopited.droidbt.common.BluetoothUtils
+import io.github.boopited.droidbt.common.BluetoothUtils.REQUEST_ENABLE_BT
 
 class MainActivity : AppCompatActivity() {
 

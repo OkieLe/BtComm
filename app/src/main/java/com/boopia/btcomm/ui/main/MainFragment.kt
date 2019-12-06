@@ -13,16 +13,20 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.boopia.btcomm.R
-import com.boopia.btcomm.bt.MasterManager
+import com.boopia.btcomm.bt.GattClientManager
+import com.boopia.btcomm.utils.BTConstants
+import io.github.boopited.droidbt.MasterManager
 
-class MainFragment : Fragment(), MasterManager.ScanCallback {
+class MainFragment : Fragment(), MasterManager.DeviceCallback {
 
     companion object {
+        private const val TAG = "MainFragment"
         fun newInstance() = MainFragment()
     }
 
-    private lateinit var masterManager: MasterManager
-    private val leDevices: MutableSet<BluetoothDevice> = mutableSetOf()
+    private var masterManager: MasterManager? = null
+    private var gattClient: GattClientManager? = null
+    private val targetDevices: MutableSet<String> = mutableSetOf()
 
     private lateinit var viewModel: BluetoothViewModel
     private lateinit var rootView: View
@@ -36,7 +40,8 @@ class MainFragment : Fragment(), MasterManager.ScanCallback {
     ): View {
         val view = inflater.inflate(R.layout.main_fragment, container, false)
         initViews(view)
-        masterManager = MasterManager(requireContext(), this)
+        masterManager =
+            MasterManager(requireContext(), this, BTConstants.SERVICE_CHAT)
         return view
     }
 
@@ -45,9 +50,9 @@ class MainFragment : Fragment(), MasterManager.ScanCallback {
         userMessage = view.findViewById(R.id.user_message)
         devicesList = view.findViewById(R.id.devices_list)
         rootView.setOnClickListener {
-            leDevices.clear()
+            targetDevices.clear()
             devicesAdapter.clearDevices()
-            masterManager.start()
+            masterManager?.start()
             userMessage.visibility = View.GONE
             devicesList.visibility = View.VISIBLE
         }
@@ -62,14 +67,26 @@ class MainFragment : Fragment(), MasterManager.ScanCallback {
     }
 
     override fun onDeviceFound(device: BluetoothDevice) {
-        if (leDevices.add(device)) {
-            Log.i("BluetoothF", "${device.name}: (${device.address})@${device.type}")
+        if ((device.type == BluetoothDevice.DEVICE_TYPE_DUAL
+                    || device.type == BluetoothDevice.DEVICE_TYPE_LE) && targetDevices.add(device.address)) {
+            Log.i(TAG, "${device.name}: (${device.address})@${device.type}")
             devicesAdapter.addDevice(device)
         }
     }
 
+    override fun onComplete() {
+        gattClient = GattClientManager(requireContext(), targetDevices.toList())
+        gattClient?.start()
+    }
+
     override fun onFailed(error: Int) {
         Toast.makeText(requireActivity(), "Error: $error", Toast.LENGTH_LONG).show()
+    }
+
+    override fun onDestroyView() {
+        gattClient?.stop()
+        masterManager?.stop()
+        super.onDestroyView()
     }
 
     private class DeviceAdapter: RecyclerView.Adapter<DeviceViewHolder>() {
