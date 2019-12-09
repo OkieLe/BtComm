@@ -12,15 +12,8 @@ object BTConstants {
     val CHARACTERISTIC_GESTURE: UUID = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb")
     val CONTENT_NOTIFY: UUID = UUID.fromString("00002902-0000-1000-8000-00805F9B34FB")
 
-    const val ACTION_GATT_CONNECTED = "com.thoughtworks.hmi.ACTION_GATT_CONNECTED"
-    const val ACTION_GATT_DISCONNECTED = "com.thoughtworks.hmi.ACTION_GATT_DISCONNECTED"
-    const val ACTION_GATT_SERVICES_DISCOVERED = "com.thoughtworks.hmi.ACTION_GATT_SERVICES_DISCOVERED"
-    const val ACTION_DATA_AVAILABLE = "com.thoughtworks.hmi.ACTION_DATA_AVAILABLE"
-
     const val EXTRA_DATA = "com.thoughtworks.hmi.EXTRA_DATA"
     const val EXTRA_TIME_STAMP = "com.thoughtworks.hmi.EXTRA_TIME"
-
-    const val ACTION_MESSAGE_SENT = "com.thoughtworks.hmi.ACTION_MESSAGE_SENT"
 
     fun createChatService(): BluetoothGattService {
         val service = BluetoothGattService(
