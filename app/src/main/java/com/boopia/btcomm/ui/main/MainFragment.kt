@@ -17,16 +17,16 @@ import com.boopia.btcomm.bt.DataDealer
 import com.boopia.btcomm.bt.GattClientManager
 import com.boopia.btcomm.utils.BTConstants
 import com.boopia.btcomm.utils.Gesture
-import io.github.boopited.droidbt.MasterManager
+import io.github.boopited.droidbt.CentralManager
 
-class MainFragment : Fragment(), MasterManager.DeviceCallback, DataDealer<Gesture> {
+class MainFragment : Fragment(), CentralManager.DeviceCallback, DataDealer<Gesture> {
 
     companion object {
         private const val TAG = "MainFragment"
         fun newInstance() = MainFragment()
     }
 
-    private var masterManager: MasterManager? = null
+    private var centralManager: CentralManager? = null
     private var gattClient: GattClientManager? = null
     private val targetDevices: MutableSet<String> = mutableSetOf()
 
@@ -42,8 +42,8 @@ class MainFragment : Fragment(), MasterManager.DeviceCallback, DataDealer<Gestur
     ): View {
         val view = inflater.inflate(R.layout.main_fragment, container, false)
         initViews(view)
-        masterManager =
-            MasterManager(requireContext(), this,
+        centralManager =
+            CentralManager(requireContext(), this,
                 BTConstants.SERVICE_GESTURE, BTConstants.BT_NAME_PREFIX)
         return view
     }
@@ -55,7 +55,7 @@ class MainFragment : Fragment(), MasterManager.DeviceCallback, DataDealer<Gestur
         rootView.setOnClickListener {
             targetDevices.clear()
             devicesAdapter.clearDevices()
-            masterManager?.start()
+            centralManager?.start()
             userMessage.visibility = View.GONE
             devicesList.visibility = View.VISIBLE
         }
@@ -92,7 +92,7 @@ class MainFragment : Fragment(), MasterManager.DeviceCallback, DataDealer<Gestur
 
     override fun onDestroyView() {
         gattClient?.stop()
-        masterManager?.stop()
+        centralManager?.stop()
         super.onDestroyView()
     }
 
