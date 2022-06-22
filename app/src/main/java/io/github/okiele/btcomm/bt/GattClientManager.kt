@@ -1,11 +1,11 @@
-package com.boopia.btcomm.bt
+package io.github.okiele.btcomm.bt
 
 import android.bluetooth.*
 import android.content.Context
 import android.util.Log
-import com.boopia.btcomm.utils.BTConstants
-import com.boopia.btcomm.utils.BTConstants.unwrapMessage
-import com.boopia.btcomm.utils.Gesture
+import io.github.okiele.btcomm.utils.BTConstants
+import io.github.okiele.btcomm.utils.BTConstants.unwrapMessage
+import io.github.okiele.btcomm.utils.Gesture
 import io.github.boopited.droidbt.common.BaseManager
 import io.github.boopited.droidbt.gatt.GattClient
 

@@ -1,23 +1,23 @@
-package com.boopia.btcomm.ui.main
+package io.github.okiele.btcomm.ui.main
 
 import android.bluetooth.BluetoothDevice
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.boopia.btcomm.R
-import com.boopia.btcomm.bt.DataDealer
-import com.boopia.btcomm.bt.GattClientManager
-import com.boopia.btcomm.utils.BTConstants
-import com.boopia.btcomm.utils.Gesture
 import io.github.boopited.droidbt.CentralManager
+import io.github.okiele.btcomm.R
+import io.github.okiele.btcomm.bt.DataDealer
+import io.github.okiele.btcomm.bt.GattClientManager
+import io.github.okiele.btcomm.utils.BTConstants
+import io.github.okiele.btcomm.utils.Gesture
 
 class MainFragment : Fragment(), CentralManager.DeviceCallback, DataDealer<Gesture> {
 
@@ -30,7 +30,7 @@ class MainFragment : Fragment(), CentralManager.DeviceCallback, DataDealer<Gestu
     private var gattClient: GattClientManager? = null
     private val targetDevices: MutableSet<String> = mutableSetOf()
 
-    private lateinit var viewModel: BluetoothViewModel
+    private val viewModel: BluetoothViewModel by viewModels()
     private lateinit var rootView: View
     private lateinit var userMessage: View
     private lateinit var devicesList: RecyclerView
@@ -62,11 +62,6 @@ class MainFragment : Fragment(), CentralManager.DeviceCallback, DataDealer<Gestu
         devicesList.layoutManager = LinearLayoutManager(context)
         devicesAdapter = DeviceAdapter()
         devicesList.adapter = devicesAdapter
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(requireActivity()).get(BluetoothViewModel::class.java)
     }
 
     override fun onDeviceFound(device: BluetoothDevice) {

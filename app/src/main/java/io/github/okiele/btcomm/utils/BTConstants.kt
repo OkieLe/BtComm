@@ -1,4 +1,4 @@
-package com.boopia.btcomm.utils
+package io.github.okiele.btcomm.utils
 
 import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothGattDescriptor
@@ -12,8 +12,8 @@ object BTConstants {
     val CHARACTERISTIC_GESTURE: UUID = UUID.fromString("0000ffe1-0000-1000-8000-00805f9b34fb")
     val CONTENT_NOTIFY: UUID = UUID.fromString("00002902-0000-1000-8000-00805F9B34FB")
 
-    const val EXTRA_DATA = "com.thoughtworks.hmi.EXTRA_DATA"
-    const val EXTRA_TIME_STAMP = "com.thoughtworks.hmi.EXTRA_TIME"
+    const val EXTRA_DATA = "io.github.okiele.btconnector.EXTRA_DATA"
+    const val EXTRA_TIME_STAMP = "io.github.okiele.btconnector.EXTRA_TIME"
 
     fun createChatService(): BluetoothGattService {
         val service = BluetoothGattService(
@@ -48,7 +48,6 @@ object BTConstants {
         return bytes
     }
 
-    @ExperimentalUnsignedTypes
     fun unwrapMessage(value: ByteArray): Gesture {
         val type = value[0].toInt()
         val time = if (value.size > 5) {
@@ -57,7 +56,6 @@ object BTConstants {
         return Gesture(type, time)
     }
 
-    @ExperimentalUnsignedTypes
     private fun uint32ByteArrayToLong(value: ByteArray): Long {
         if (value.size != 4) throw IllegalArgumentException("Wrong size byte array")
         return ((value[3].toUInt() and 0xFFU) shl 8 or

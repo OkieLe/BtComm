@@ -1,4 +1,4 @@
-package com.boopia.btcomm.utils
+package io.github.okiele.btcomm.utils
 
 import androidx.annotation.IntDef
 

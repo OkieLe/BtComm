@@ -1,4 +1,4 @@
-package com.boopia.btcomm.ui.main
+package io.github.okiele.btcomm.ui.main
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

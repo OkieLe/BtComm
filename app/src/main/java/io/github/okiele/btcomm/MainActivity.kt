@@ -1,14 +1,11 @@
-package com.boopia.btcomm
+package io.github.okiele.btcomm
 
-import android.app.Activity
-import android.content.Intent
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
-import com.boopia.btcomm.ui.main.MainFragment
+import androidx.appcompat.app.AppCompatActivity
 import io.github.boopited.droidbt.common.BluetoothUtils
-import io.github.boopited.droidbt.common.BluetoothUtils.REQUEST_ENABLE_BT
+import io.github.okiele.btcomm.ui.main.MainFragment
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,15 +19,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_ENABLE_BT) {
-            if (resultCode == Activity.RESULT_OK) {
-                showBluetoothScanner()
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data)
-    }
-
     private fun showBluetoothScanner() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.container, MainFragment.newInstance())
@@ -38,8 +26,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkBluetoothState() {
-        if (!BluetoothUtils.isBluetoothEnabled()) {
-            BluetoothUtils.openBluetooth(this, REQUEST_ENABLE_BT)
+        if (!BluetoothUtils.isBluetoothEnabled(this)) {
+            BluetoothUtils.openBluetooth(this) { showBluetoothScanner()}
         } else {
             showBluetoothScanner()
         }
